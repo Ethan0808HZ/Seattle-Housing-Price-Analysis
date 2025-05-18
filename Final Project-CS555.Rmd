@@ -1,0 +1,74 @@
+---
+title: "CS555 final project"
+output: html_document
+date: "2025-04-15"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+set.seed(1)
+data <- read.csv("Housing.csv")
+# Convert variables to factor in the dataset
+data$waterfront <- as.factor(data$waterfront)
+data$view <- as.factor(data$view)
+data$condition <- as.factor(data$condition)
+data$grade <- as.factor(data$grade)
+data <- data[, !(names(data) %in% c("zipcode", "lat", "long", "yr_renovated", "id"))]
+
+sampled_data <- data[sample(nrow(data), 1000), ]  # sample 100 rows
+
+```
+
+```{r}
+# Fit the full model
+full_model <- lm(price ~ ., data = sampled_data)
+
+# Apply stepwise selection
+stepwise_model <- step(full_model, direction = "both")
+
+# View the final model
+summary(stepwise_model)
+```
+
+```{r}
+library(car)
+```
+```{r}
+vif(stepwise_model)
+```
+
+```{r}
+model_2 = lm(formula = price ~ bedrooms + bathrooms + sqft_living + floors + 
+    waterfront + view + condition + grade + yr_built + sqft_lot15, data = sampled_data)
+
+summary(model_2)
+
+vif(model_2)
+```
+```{r}
+final_model = lm(formula = price ~ bedrooms + bathrooms + sqft_living + floors + 
+    waterfront + view + grade + yr_built + sqft_lot15, data = sampled_data)
+
+summary(final_model)
+
+vif(final_model)
+```
+
+
+
+```{r}
+plot(final_model)
+
+
+```
+
+
+
+
+
+
+
+
